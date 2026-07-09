@@ -9,7 +9,7 @@
 - 判断是否进入“近期高位区间”。
 - 按你的港币金额估算可换人民币，以及距离近期高点少换多少。
 - GitHub Actions 工作日北京时间 18:15 自动运行。
-- 触发高位时自动开/更新 GitHub Issue，并发送邮件提醒。
+- 触发高位时自动开/更新 GitHub Issue，不需要配置 Secrets。
 
 ## GitHub 上直接运行
 
@@ -31,32 +31,17 @@ Actions -> HKD/CNY Monitor -> Run workflow
 工作日北京时间 18:15
 ```
 
-## 邮件提醒设置
+## 无 Secrets 提醒方式
 
-GitHub Actions 发邮件需要一个发信邮箱的 SMTP 授权码。推荐直接用你的 126 邮箱发给自己。
+不用邮箱授权码也能提醒：让 Actions 在高位时创建 GitHub Issue，然后用 GitHub 自带通知。
 
-在 GitHub 仓库中进入：
-
-```text
-Settings -> Secrets and variables -> Actions -> New repository secret
-```
-
-添加这三个必填 Secrets：
+设置方法：
 
 ```text
-ALERT_EMAIL_TO=你的收件邮箱
-SMTP_USER=你的发信邮箱
-SMTP_PASSWORD=你的邮箱 SMTP 授权码
+打开仓库 -> 右上角 Watch -> All Activity
 ```
 
-可选 Secrets，默认已经按 126 邮箱配置好，一般不用填：
-
-```text
-SMTP_HOST=smtp.126.com
-SMTP_PORT=465
-```
-
-注意：`SMTP_PASSWORD` 通常不是邮箱登录密码，而是邮箱设置里开启 SMTP/POP3 后生成的“客户端授权码”。
+这样触发 `HKD/CNY 高位提醒` Issue 时，你会在 GitHub 通知中心、GitHub App 推送，以及你 GitHub 账号配置的通知邮箱里收到提醒。这个方案不需要添加任何 Secrets。
 
 ## 怎么判断是否该换
 
@@ -101,6 +86,22 @@ SMTP_PORT=465
 ```
 
 如果设置了 `target_rate`，达到心理价位也会触发提醒。
+
+## 可视化网页
+
+仓库包含 `dashboard.html`，启用 GitHub Pages 后可以直接网页查看趋势和信号。
+
+启用路径：
+
+```text
+Settings -> Pages -> Deploy from a branch -> main / root -> Save
+```
+
+启用后访问：
+
+```text
+https://zhu-pengli.github.io/hkd-cny-monitor/dashboard.html
+```
 
 ## 本地运行
 
