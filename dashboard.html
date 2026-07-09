@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HKD/CNY 汇率监测</title>
+  <style>
+    :root { --bg:#f6f7f9; --panel:#fff; --text:#17202a; --muted:#667085; --line:#d7dde6; --blue:#2563eb; --green:#15803d; --amber:#b45309; --red:#b42318; --ink:#0f172a; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; letter-spacing:0; }
+    .app { width:min(1120px, calc(100% - 28px)); margin:0 auto; padding:24px 0 36px; }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:18px; }
+    h1 { margin:0; color:var(--ink); font-size:clamp(26px, 4vw, 40px); line-height:1.12; }
+    h2, p { margin:0; }
+    .kicker { color:var(--muted); font-weight:800; font-size:13px; margin-bottom:6px; }
+    .badge { min-width:108px; text-align:center; padding:10px 14px; border-radius:8px; border:1px solid var(--line); background:#fff; font-weight:900; }
+    .badge.alert { color:var(--red); background:#fff4f2; border-color:#f3b4ad; }
+    .badge.watch { color:var(--amber); background:#fff7ed; border-color:#fed7aa; }
+    .badge.wait { color:var(--green); background:#f0fdf4; border-color:#bbf7d0; }
+    .controls { display:grid; grid-template-columns:repeat(4, minmax(130px, 1fr)) auto; gap:12px; align-items:end; padding:18px 0; }
+    label { display:grid; gap:6px; color:var(--muted); font-size:13px; font-weight:800; }
+    input, select, button { height:42px; border-radius:8px; font:inherit; }
+    input, select { width:100%; border:1px solid var(--line); padding:0 12px; background:#fff; }
+    button { border:0; background:var(--ink); color:#fff; padding:0 18px; font-weight:900; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(280px,.85fr); gap:16px; }
+    .panel, .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:0 10px 28px rgba(15,23,42,.08); }
+    .panel { padding:18px; min-height:460px; }
+    .panel-head { display:flex; justify-content:space-between; gap:16px; margin-bottom:12px; }
+    .subtle { color:var(--muted); font-size:13px; line-height:1.45; }
+    .chart { height:370px; }
+    canvas { width:100%; height:100%; display:block; }
+    .cards { display:grid; gap:12px; }
+    .card { min-height:96px; padding:16px; }
+    .label { color:var(--muted); font-size:13px; font-weight:900; margin-bottom:8px; }
+    .value { color:var(--ink); font-size:24px; font-weight:900; line-height:1.15; overflow-wrap:anywhere; }
+    .caption { color:var(--muted); margin-top:8px; font-size:13px; line-height:1.4; }
+    .action { margin-top:16px; padding:16px; border-left:4px solid var(--blue); border-radius:8px; background:#eef3f8; line-height:1.7; }
+    .footer { color:var(--muted); font-size:13px; line-height:1.6; margin-top:16px; }
+    a { color:var(--blue); }
+    @media (max-width:880px) { .top, .grid { grid-template-columns:1fr; display:grid; } .controls { grid-template-columns:1fr; } .badge { width:100%; } .chart { height:310px; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div><p class="kicker">HKD -> CNY</p><h1>港币兑人民币监测</h1></div>
+      <div id="status" class="badge">读取中</div>
+    </header>
+
+    <section class="controls">
+      <label>金额 HKD<input id="amount" type="number" min="0" step="1000" value="100000"></label>
+      <label>窗口<select id="lookback"><option value="30">30 日</option><option value="60">60 日</option><option value="90" selected>90 日</option><option value="180">180 日</option></select></label>
+      <label>高点阈值 %<input id="threshold" type="number" min="0" step="0.05" value="0.30"></label>
+      <label>分位阈值 %<input id="percentileLimit" type="number" min="0" max="100" step="1" value="90"></label>
+      <button id="refresh" type="button">刷新</button>
+    </section>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-head"><div><h2 id="chartTitle">近期走势</h2><p id="chartMeta" class="subtle">等待数据</p></div><p id="source" class="subtle">Frankfurter</p></div>
+        <div class="chart"><canvas id="chart"></canvas></div>
+      </section>
+      <section class="cards">
+        <article class="card"><p class="label">最新参考价</p><p id="latest" class="value">--</p><p id="latestDate" class="caption">--</p></article>
+        <article class="card"><p class="label">距离近期高点</p><p id="distance" class="value">--</p><p id="high" class="caption">--</p></article>
+        <article class="card"><p class="label">当前分位</p><p id="pct" class="value">--</p><p id="trend" class="caption">--</p></article>
+        <article class="card"><p class="label">可换人民币估算</p><p id="cny" class="value">--</p><p id="missed" class="caption">--</p></article>
+      </section>
+    </main>
+
+    <section class="action" id="action">等待数据</section>
+    <p class="footer">数据源：<a href="https://frankfurter.dev/" target="_blank" rel="noreferrer">Frankfurter exchange-rate API</a>。参考汇率不等于银行实盘价，换汇前请比较买入价、手续费和额度规则。</p>
+  </div>
+
+  <script>
+    const providerUrl = "https://api.frankfurter.dev";
+    const $ = (id) => document.getElementById(id);
+    const els = { amount:$('amount'), lookback:$('lookback'), threshold:$('threshold'), percentileLimit:$('percentileLimit'), refresh:$('refresh'), status:$('status'), chartTitle:$('chartTitle'), chartMeta:$('chartMeta'), source:$('source'), latest:$('latest'), latestDate:$('latestDate'), distance:$('distance'), high:$('high'), pct:$('pct'), trend:$('trend'), cny:$('cny'), missed:$('missed'), action:$('action'), chart:$('chart') };
+    let points = [];
+    let result = null;
+
+    els.refresh.addEventListener('click', refreshLive);
+    [els.amount, els.lookback, els.threshold, els.percentileLimit].forEach(el => el.addEventListener('input', renderState));
+    window.addEventListener('resize', () => result && draw(result));
+    bootstrap();
+
+    async function bootstrap() {
+      setLoading(true);
+      try {
+        const local = await fetch('data/rates.json?ts=' + Date.now(), { cache:'no-store' });
+        if (!local.ok) throw new Error('no local data');
+        const data = await local.json();
+        points = normalize(data.points || []);
+        els.source.textContent = data.source?.name || 'data/rates.json';
+        if (data.config) {
+          els.amount.value = data.config.amount_hkd ?? els.amount.value;
+          els.lookback.value = data.config.lookback_days ?? els.lookback.value;
+          els.threshold.value = data.config.near_high_threshold_pct ?? els.threshold.value;
+          els.percentileLimit.value = data.config.alert_min_percentile ?? els.percentileLimit.value;
+        }
+        renderState();
+      } catch (_) {
+        await refreshLive();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function refreshLive() {
+      setLoading(true);
+      try {
+        const days = Number(els.lookback.value || 90);
+        const today = new Date();
+        const start = new Date(today);
+        start.setDate(today.getDate() - days - Math.max(45, Math.round(days * .6)));
+        const params = new URLSearchParams({ base:'HKD', quotes:'CNY', from:iso(start), to:iso(today) });
+        const res = await fetch(`${providerUrl}/v2/rates?${params}`, { cache:'no-store' });
+        if (!res.ok) throw new Error('API ' + res.status);
+        points = extract(await res.json());
+        els.source.textContent = 'Frankfurter live';
+        renderState();
+      } catch (err) {
+        els.status.textContent = '失败'; els.status.className = 'badge alert';
+        els.action.textContent = '没有拿到汇率数据。请稍后刷新，或到 GitHub Actions 手动运行监测。';
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function extract(payload) {
+      if (Array.isArray(payload?.value)) return normalize(payload.value.map(r => ({ date:r.date, rate:r.rate })));
+      if (Array.isArray(payload)) return normalize(payload.map(r => ({ date:r.date, rate:r.rate })));
+      const rates = payload?.rates || {};
+      if (Array.isArray(rates)) return normalize(rates.map(r => ({ date:r.date || r.day, rate:r.rate || r.CNY })));
+      return normalize(Object.entries(rates).map(([date, q]) => ({ date, rate:Number(q.CNY) })));
+    }
+
+    function normalize(rows) { return rows.map(r => ({ date:String(r.date), rate:Number(r.rate) })).filter(r => r.date && Number.isFinite(r.rate) && r.rate > 0).sort((a,b) => a.date.localeCompare(b.date)); }
+    function cfg() { return { amount:Number(els.amount.value || 100000), days:Number(els.lookback.value || 90), threshold:Number(els.threshold.value || .3), pctLimit:Number(els.percentileLimit.value || 90), spread:.15 }; }
+    function pctChange(rows, n) { if (rows.length <= n) return null; return (rows.at(-1).rate - rows[rows.length-n-1].rate) / rows[rows.length-n-1].rate * 100; }
+    function fmtPct(v) { return v == null ? 'n/a' : v.toFixed(2) + '%'; }
+    function money(v) { return Number(v).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+    function iso(d) { return d.toISOString().slice(0,10); }
+
+    function analyze() {
+      const c = cfg();
+      const rows = normalize(points).slice(-c.days);
+      const values = rows.map(p => p.rate);
+      const latest = rows.at(-1);
+      const high = Math.max(...values);
+      const low = Math.min(...values);
+      const distance = (high - latest.rate) / high * 100;
+      const percentile = values.filter(v => v <= latest.rate).length / values.length * 100;
+      const alert = distance <= c.threshold && percentile >= c.pctLimit;
+      const status = alert ? 'alert' : (distance <= c.threshold * 2 || percentile >= 80 ? 'watch' : 'wait');
+      const label = status === 'alert' ? '高位提醒' : status === 'watch' ? '接近高位' : '继续等待';
+      const action = status === 'alert' ? '已进入配置的近期高位区间。适合重点比较银行实盘价，并按资金计划考虑是否分批换汇。' : status === 'watch' ? '价格已经偏高但未完全触发提醒。可以继续观察，并提前准备好换汇渠道和限价。' : '距离近期高点还有空间。非刚需时，继续等待更优报价更符合高点换汇目标。';
+      return { c, rows, latest, high, low, distance, percentile, status, label, action, change7:pctChange(rows,7), change30:pctChange(rows,30), gross:c.amount*latest.rate, missed:c.amount*Math.max(high-latest.rate,0) };
+    }
+
+    function renderState() {
+      if (!points.length) return;
+      result = analyze();
+      els.status.textContent = result.label; els.status.className = 'badge ' + result.status;
+      els.chartTitle.textContent = result.c.days + ' 日走势';
+      els.chartMeta.textContent = result.rows[0].date + ' 至 ' + result.latest.date;
+      els.latest.textContent = '1 HKD = ' + result.latest.rate.toFixed(6) + ' CNY';
+      els.latestDate.textContent = result.latest.date;
+      els.distance.textContent = result.distance.toFixed(2) + '%';
+      els.high.textContent = '高点 ' + result.high.toFixed(6);
+      els.pct.textContent = result.percentile.toFixed(2) + '%';
+      els.trend.textContent = '7日 ' + fmtPct(result.change7) + ' / 30日 ' + fmtPct(result.change30);
+      els.cny.textContent = money(result.gross) + ' CNY';
+      els.missed.textContent = '距高点少换约 ' + money(result.missed) + ' CNY';
+      els.action.textContent = result.action;
+      draw(result);
+    }
+
+    function setLoading(v) { els.refresh.disabled = v; if (v) { els.status.textContent = '读取中'; els.status.className = 'badge'; } }
+
+    function draw(r) {
+      const canvas = els.chart, rect = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr)); canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,rect.width,rect.height);
+      const pad = { left:58, right:18, top:18, bottom:36 }, w = rect.width-pad.left-pad.right, h = rect.height-pad.top-pad.bottom;
+      const vals = r.rows.map(p => p.rate), min = Math.min(...vals), max = Math.max(...vals), span = Math.max(max-min, .0001), lo = min-span*.12, hi = max+span*.12;
+      const x = i => pad.left + (r.rows.length === 1 ? w : i/(r.rows.length-1)*w), y = v => pad.top + (hi-v)/(hi-lo)*h;
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,rect.width,rect.height);
+      ctx.strokeStyle = '#e5e7eb'; ctx.fillStyle = '#667085'; ctx.font = '12px Segoe UI, sans-serif';
+      for (let i=0;i<=4;i++) { const v = lo + (hi-lo)*i/4, yy = y(v); ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(rect.width-pad.right, yy); ctx.stroke(); ctx.fillText(v.toFixed(4), 8, yy+4); }
+      ctx.strokeStyle = '#b42318'; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(pad.left, y(r.high)); ctx.lineTo(rect.width-pad.right, y(r.high)); ctx.stroke(); ctx.setLineDash([]);
+      const grad = ctx.createLinearGradient(0,pad.top,0,rect.height-pad.bottom); grad.addColorStop(0,'rgba(37,99,235,.18)'); grad.addColorStop(1,'rgba(21,128,61,.03)');
+      ctx.beginPath(); r.rows.forEach((p,i) => i ? ctx.lineTo(x(i), y(p.rate)) : ctx.moveTo(x(i), y(p.rate))); ctx.lineTo(x(r.rows.length-1), rect.height-pad.bottom); ctx.lineTo(x(0), rect.height-pad.bottom); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+      ctx.beginPath(); r.rows.forEach((p,i) => i ? ctx.lineTo(x(i), y(p.rate)) : ctx.moveTo(x(i), y(p.rate))); ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2.4; ctx.stroke();
+      ctx.fillStyle = r.status === 'alert' ? '#b42318' : r.status === 'watch' ? '#b45309' : '#15803d'; ctx.beginPath(); ctx.arc(x(r.rows.length-1), y(r.latest.rate), 5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#667085'; ctx.fillText(r.rows[0].date, pad.left, rect.height-12); const end = r.latest.date, tw = ctx.measureText(end).width; ctx.fillText(end, rect.width-pad.right-tw, rect.height-12);
+    }
+  </script>
+</body>
+</html>
