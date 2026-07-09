@@ -75,7 +75,7 @@ jobs:
       - name: Send email alert
         if: env.HKD_CNY_ALERT == 'true'
         env:
-          ALERT_EMAIL_TO: zhupengli0830@126.com
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
           SMTP_HOST: ${{ secrets.SMTP_HOST || 'smtp.126.com' }}
           SMTP_PORT: ${{ secrets.SMTP_PORT || '465' }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -91,11 +91,12 @@ jobs:
           smtp_port = int(os.environ.get("SMTP_PORT", "465"))
           smtp_user = os.environ.get("SMTP_USER")
           smtp_password = os.environ.get("SMTP_PASSWORD")
-          email_to = os.environ["ALERT_EMAIL_TO"]
+          email_to = os.environ.get("ALERT_EMAIL_TO")
           title = os.environ.get("HKD_CNY_TITLE", "HKD/CNY 高位提醒")
           body = Path("data/summary.md").read_text(encoding="utf-8")
 
           missing = [name for name, value in {
+              "ALERT_EMAIL_TO": email_to,
               "SMTP_USER": smtp_user,
               "SMTP_PASSWORD": smtp_password,
           }.items() if not value]
