@@ -72,57 +72,6 @@ jobs:
               });
             }
 
-      - name: Send email alert
-        if: env.HKD_CNY_ALERT == 'true'
-        env:
-          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST || 'smtp.126.com' }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT || '465' }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-        run: |
-          python - <<'PY'
-          import os
-          import smtplib
-          from email.message import EmailMessage
-          from pathlib import Path
-
-          smtp_host = os.environ.get("SMTP_HOST", "smtp.126.com")
-          smtp_port = int(os.environ.get("SMTP_PORT", "465"))
-          smtp_user = os.environ.get("SMTP_USER")
-          smtp_password = os.environ.get("SMTP_PASSWORD")
-          email_to = os.environ.get("ALERT_EMAIL_TO")
-          title = os.environ.get("HKD_CNY_TITLE", "HKD/CNY 高位提醒")
-          body = Path("data/summary.md").read_text(encoding="utf-8")
-
-          missing = [name for name, value in {
-              "ALERT_EMAIL_TO": email_to,
-              "SMTP_USER": smtp_user,
-              "SMTP_PASSWORD": smtp_password,
-          }.items() if not value]
-          if missing:
-              raise SystemExit(
-                  "Missing GitHub Actions secret(s): " + ", ".join(missing) +
-                  ". Add them in Settings > Secrets and variables > Actions."
-              )
-
-          msg = EmailMessage()
-          msg["Subject"] = title
-          msg["From"] = smtp_user
-          msg["To"] = email_to
-          msg.set_content(body)
-
-          if smtp_port == 465:
-              with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=30) as server:
-                  server.login(smtp_user, smtp_password)
-                  server.send_message(msg)
-          else:
-              with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as server:
-                  server.starttls()
-                  server.login(smtp_user, smtp_password)
-                  server.send_message(msg)
-          PY
-
       - name: Close stale alert issue
         if: env.HKD_CNY_ALERT != 'true'
         uses: actions/github-script@v7
