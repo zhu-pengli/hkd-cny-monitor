@@ -10,6 +10,17 @@
 - 按你的港币金额估算可换人民币，以及距离近期高点少换多少。
 - GitHub Actions 工作日北京时间 18:15 自动运行。
 - 触发高位时自动开/更新 GitHub Issue，不需要配置 Secrets。
+- 提供不依赖 `zhu-pengli.github.io` 的可视化网页。
+
+## 可视化网页
+
+直接打开：
+
+```text
+https://raw.githack.com/zhu-pengli/hkd-cny-monitor/main/dashboard.html
+```
+
+这个链接会直接渲染仓库里的 `dashboard.html`，不是 `zhu-pengli.github.io`。页面会优先读取 `data/rates.json`，如果 Actions 还没有生成数据，会自动实时拉取公开汇率 API。
 
 ## GitHub 上直接运行
 
@@ -45,7 +56,7 @@ Actions -> HKD/CNY Monitor -> Run workflow
 
 ## 怎么判断是否该换
 
-核心看 `data/summary.md` 或 GitHub Actions 的运行摘要：
+核心看网页、`data/summary.md` 或 GitHub Actions 的运行摘要：
 
 - `信号：高位提醒`：进入配置的近期高位区间，可以重点比较银行/券商实时买入价，考虑分批换汇。
 - `信号：接近高位`：已经偏高但未完全触发提醒，可以继续观察。
@@ -86,22 +97,6 @@ Actions -> HKD/CNY Monitor -> Run workflow
 ```
 
 如果设置了 `target_rate`，达到心理价位也会触发提醒。
-
-## 可视化网页
-
-仓库包含 `dashboard.html`，启用 GitHub Pages 后可以直接网页查看趋势和信号。
-
-启用路径：
-
-```text
-Settings -> Pages -> Deploy from a branch -> main / root -> Save
-```
-
-启用后访问：
-
-```text
-https://zhu-pengli.github.io/hkd-cny-monitor/dashboard.html
-```
 
 ## 本地运行
 
