@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-16T19:54:02+08:00",
+  "generated_at": "2026-07-17T19:40:26+08:00",
   "source": {
     "name": "Frankfurter exchange-rate API",
-    "url": "https://api.frankfurter.dev/v2/rates?base=HKD&quotes=CNY&from=2026-02-22&to=2026-07-16",
+    "url": "https://api.frankfurter.dev/v2/rates?base=HKD&quotes=CNY&from=2026-02-23&to=2026-07-17",
     "base": "HKD",
     "quote": "CNY",
     "note": "Daily reference rates. Actual bank or broker quotes may differ."
@@ -17,13 +17,13 @@
     "bank_spread_pct": 0.15
   },
   "latest": {
-    "date": "2026-07-16",
-    "rate": 0.86253,
-    "label": "1 HKD = 0.862530 CNY"
+    "date": "2026-07-17",
+    "rate": 0.8624,
+    "label": "1 HKD = 0.862400 CNY"
   },
   "window": {
-    "from": "2026-04-18",
-    "to": "2026-07-16",
+    "from": "2026-04-19",
+    "to": "2026-07-17",
     "observations": 90,
     "high_rate": 0.87105,
     "high_dates": [
@@ -34,23 +34,23 @@
     "low_dates": [
       "2026-06-17"
     ],
-    "mean_rate": 0.86579678,
-    "median_rate": 0.86534,
-    "ma_7": 0.86366143,
-    "ma_30": 0.86423467,
-    "change_7d_pct": -0.4306,
-    "change_30d_pct": 0.1068,
-    "volatility_pct": 0.3279,
-    "distance_to_high_pct": 0.9781,
-    "distance_from_low_pct": 0.13,
+    "mean_rate": 0.86570889,
+    "median_rate": 0.865265,
+    "ma_7": 0.86335286,
+    "ma_30": 0.864262,
+    "change_7d_pct": -0.2302,
+    "change_30d_pct": 0.1149,
+    "volatility_pct": 0.3264,
+    "distance_to_high_pct": 0.9931,
+    "distance_from_low_pct": 0.1149,
     "percentile": 10.0,
-    "days_since_high": 81
+    "days_since_high": 82
   },
   "amount": {
     "hkd": 100000.0,
-    "gross_cny_at_latest": 86253.0,
-    "estimated_net_cny_after_spread": 86123.62,
-    "missed_cny_vs_recent_high": 852.0
+    "gross_cny_at_latest": 86240.0,
+    "estimated_net_cny_after_spread": 86110.64,
+    "missed_cny_vs_recent_high": 865.0
   },
   "signals": {
     "status": "wait",
@@ -62,10 +62,6 @@
     "action": "距离近期高点还有空间。非刚需时，继续等待更优报价更符合高点换汇目标。"
   },
   "points": [
-    {
-      "date": "2026-04-18",
-      "rate": 0.87014
-    },
     {
       "date": "2026-04-19",
       "rate": 0.87017
@@ -420,7 +416,11 @@
     },
     {
       "date": "2026-07-16",
-      "rate": 0.86253
+      "rate": 0.86236
+    },
+    {
+      "date": "2026-07-17",
+      "rate": 0.8624
     }
   ],
   "notes": [
