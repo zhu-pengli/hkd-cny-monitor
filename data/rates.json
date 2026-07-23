@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-07-21T19:59:32+08:00",
+  "generated_at": "2026-07-23T20:02:13+08:00",
   "source": {
     "name": "Frankfurter exchange-rate API",
-    "url": "https://api.frankfurter.dev/v2/rates?base=HKD&quotes=CNY&from=2026-02-27&to=2026-07-21",
+    "url": "https://api.frankfurter.dev/v2/rates?base=HKD&quotes=CNY&from=2026-03-01&to=2026-07-23",
     "base": "HKD",
     "quote": "CNY",
     "note": "Daily reference rates. Actual bank or broker quotes may differ."
@@ -17,40 +17,39 @@
     "bank_spread_pct": 0.15
   },
   "latest": {
-    "date": "2026-07-21",
-    "rate": 0.86213,
-    "label": "1 HKD = 0.862130 CNY"
+    "date": "2026-07-23",
+    "rate": 0.8625,
+    "label": "1 HKD = 0.862500 CNY"
   },
   "window": {
-    "from": "2026-04-23",
-    "to": "2026-07-21",
+    "from": "2026-04-25",
+    "to": "2026-07-23",
     "observations": 90,
     "high_rate": 0.87105,
     "high_dates": [
-      "2026-04-24",
       "2026-04-26"
     ],
-    "low_rate": 0.86148,
+    "low_rate": 0.86151,
     "low_dates": [
       "2026-06-17"
     ],
-    "mean_rate": 0.86542633,
-    "median_rate": 0.864665,
-    "ma_7": 0.86277714,
-    "ma_30": 0.86436033,
-    "change_7d_pct": -0.1806,
-    "change_30d_pct": -0.0962,
-    "volatility_pct": 0.3161,
-    "distance_to_high_pct": 1.0241,
-    "distance_from_low_pct": 0.0755,
-    "percentile": 6.67,
-    "days_since_high": 86
+    "mean_rate": 0.86524633,
+    "median_rate": 0.864555,
+    "ma_7": 0.86263,
+    "ma_30": 0.864287,
+    "change_7d_pct": 0.007,
+    "change_30d_pct": -0.1655,
+    "volatility_pct": 0.3052,
+    "distance_to_high_pct": 0.9816,
+    "distance_from_low_pct": 0.1149,
+    "percentile": 13.33,
+    "days_since_high": 88
   },
   "amount": {
     "hkd": 100000.0,
-    "gross_cny_at_latest": 86213.0,
-    "estimated_net_cny_after_spread": 86083.68,
-    "missed_cny_vs_recent_high": 892.0
+    "gross_cny_at_latest": 86250.0,
+    "estimated_net_cny_after_spread": 86120.62,
+    "missed_cny_vs_recent_high": 855.0
   },
   "signals": {
     "status": "wait",
@@ -62,14 +61,6 @@
     "action": "距离近期高点还有空间。非刚需时，继续等待更优报价更符合高点换汇目标。"
   },
   "points": [
-    {
-      "date": "2026-04-23",
-      "rate": 0.87071
-    },
-    {
-      "date": "2026-04-24",
-      "rate": 0.87105
-    },
     {
       "date": "2026-04-25",
       "rate": 0.87103
@@ -228,143 +219,143 @@
     },
     {
       "date": "2026-06-03",
-      "rate": 0.86241
+      "rate": 0.86243
     },
     {
       "date": "2026-06-04",
-      "rate": 0.86316
+      "rate": 0.8632
     },
     {
       "date": "2026-06-05",
-      "rate": 0.86325
+      "rate": 0.8633
     },
     {
       "date": "2026-06-06",
-      "rate": 0.86323
+      "rate": 0.86327
     },
     {
       "date": "2026-06-07",
-      "rate": 0.86339
+      "rate": 0.86343
     },
     {
       "date": "2026-06-08",
-      "rate": 0.86427
+      "rate": 0.86431
     },
     {
       "date": "2026-06-09",
-      "rate": 0.86372
+      "rate": 0.86375
     },
     {
       "date": "2026-06-10",
-      "rate": 0.86351
+      "rate": 0.86354
     },
     {
       "date": "2026-06-11",
-      "rate": 0.86379
+      "rate": 0.86382
     },
     {
       "date": "2026-06-12",
-      "rate": 0.86278
+      "rate": 0.86281
     },
     {
       "date": "2026-06-13",
-      "rate": 0.86265
+      "rate": 0.86268
     },
     {
       "date": "2026-06-14",
-      "rate": 0.86245
+      "rate": 0.86248
     },
     {
       "date": "2026-06-15",
-      "rate": 0.86179
+      "rate": 0.86181
     },
     {
       "date": "2026-06-16",
-      "rate": 0.86165
+      "rate": 0.86168
     },
     {
       "date": "2026-06-17",
-      "rate": 0.86148
+      "rate": 0.86151
     },
     {
       "date": "2026-06-18",
-      "rate": 0.86192
+      "rate": 0.86196
     },
     {
       "date": "2026-06-19",
-      "rate": 0.86244
+      "rate": 0.86248
     },
     {
       "date": "2026-06-20",
-      "rate": 0.86261
+      "rate": 0.86265
     },
     {
       "date": "2026-06-21",
-      "rate": 0.86296
+      "rate": 0.86299
     },
     {
       "date": "2026-06-22",
-      "rate": 0.86315
+      "rate": 0.86319
     },
     {
       "date": "2026-06-23",
-      "rate": 0.86391
+      "rate": 0.86393
     },
     {
       "date": "2026-06-24",
-      "rate": 0.86597
+      "rate": 0.866
     },
     {
       "date": "2026-06-25",
-      "rate": 0.8667
+      "rate": 0.86672
     },
     {
       "date": "2026-06-26",
-      "rate": 0.86615
+      "rate": 0.86618
     },
     {
       "date": "2026-06-27",
-      "rate": 0.86604
+      "rate": 0.86607
     },
     {
       "date": "2026-06-28",
-      "rate": 0.86601
+      "rate": 0.86603
     },
     {
       "date": "2026-06-29",
-      "rate": 0.86571
+      "rate": 0.86574
     },
     {
       "date": "2026-06-30",
-      "rate": 0.8648
+      "rate": 0.86483
     },
     {
       "date": "2026-07-01",
-      "rate": 0.8648
+      "rate": 0.86483
     },
     {
       "date": "2026-07-02",
-      "rate": 0.86457
+      "rate": 0.8646
     },
     {
       "date": "2026-07-03",
-      "rate": 0.86396
+      "rate": 0.864
     },
     {
       "date": "2026-07-04",
-      "rate": 0.86383
+      "rate": 0.86386
     },
     {
       "date": "2026-07-05",
-      "rate": 0.86367
+      "rate": 0.86368
     },
     {
       "date": "2026-07-06",
-      "rate": 0.86439
+      "rate": 0.8644
     },
     {
       "date": "2026-07-07",
-      "rate": 0.86527
+      "rate": 0.86528
     },
     {
       "date": "2026-07-08",
@@ -376,7 +367,7 @@
     },
     {
       "date": "2026-07-10",
-      "rate": 0.86446
+      "rate": 0.86447
     },
     {
       "date": "2026-07-11",
@@ -384,7 +375,7 @@
     },
     {
       "date": "2026-07-12",
-      "rate": 0.8641
+      "rate": 0.86411
     },
     {
       "date": "2026-07-13",
@@ -416,11 +407,19 @@
     },
     {
       "date": "2026-07-20",
-      "rate": 0.86275
+      "rate": 0.86264
     },
     {
       "date": "2026-07-21",
-      "rate": 0.86213
+      "rate": 0.8619
+    },
+    {
+      "date": "2026-07-22",
+      "rate": 0.86233
+    },
+    {
+      "date": "2026-07-23",
+      "rate": 0.8625
     }
   ],
   "notes": [
